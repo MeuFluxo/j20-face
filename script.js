@@ -57,7 +57,8 @@ if (typeof document !== "undefined") {
   let player, stage, timeout, loading = false;
   function setRatio(ratio) {
     if (typeof ratio === "number" && Number.isFinite(ratio) && ratio > 0 && ratio <= 4) {
-      mount.style.setProperty("--embed-height", Math.min(100, ratio / (16 / 9) * 100) + "%");
+      // VTurb informa altura/largura; CSS aspect-ratio usa largura/altura.
+      mount.style.setProperty("--video-aspect", "1 / " + ratio);
     }
   }
   setRatio(config.player.aspectRatio);

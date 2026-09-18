@@ -30,12 +30,29 @@ test("todos os arquivos e avatares referenciados existem", () => {
     assert.ok(fs.existsSync(path.join(root,ref.split("?")[0])),ref);
   }
 });
-test("layout preserva coluna de 550 px e quadro vertical de 322 px", () => {
+test("layout preserva coluna de 550 px e player feed de 322 px sem faixas extras", () => {
   assert.match(css,/--content-width: 550px/);
   assert.match(css,/--player-width: 322px/);
-  assert.match(css,/aspect-ratio: 9 \/ 16/);
+  assert.match(css,/aspect-ratio: var\(--video-aspect, 3 \/ 4\)/);
+  const iframeRule = css.match(/\.video-player \.embed-stage iframe \{([^}]+)\}/)[1];
+  assert.match(iframeRule,/width: 100%; height: 100%/);
+  assert.doesNotMatch(css + pageJS,/--embed-height|height: 75%|aspect-ratio: 9 \/ 16/);
   assert.doesNotMatch(css,/transform:\s*scale/);
   assert.equal((css.match(/{/g)||[]).length,(css.match(/}/g)||[]).length);
+});
+test("a proporção da variante redimensiona o quadro, não encolhe o iframe", () => {
+  const setRatio = pageJS.match(/  function setRatio\(ratio\) \{[\s\S]*?\n  \}/)[0];
+  for (const ratio of [4 / 3, 5 / 4, 16 / 9, 9 / 16]) {
+    const properties = {};
+    const mount = { style: { setProperty: (name, value) => { properties[name] = value; } } };
+    vm.runInNewContext(setRatio + ";setRatio(input);", { mount, input: ratio });
+    assert.equal(properties["--video-aspect"], "1 / " + ratio);
+    assert.equal(Object.keys(properties).length, 1);
+  }
+  for (const ratio of [0, -1, 5, NaN, Infinity, null, "1.3333"]) {
+    const mount = { style: { setProperty: () => assert.fail("proporção inválida aplicada") } };
+    vm.runInNewContext(setRatio + ";setRatio(input);", { mount, input: ratio });
+  }
 });
 test("checkout começa oculto e sem pixels copiados", () => {
   assert.match(html,/id="offer" hidden/);

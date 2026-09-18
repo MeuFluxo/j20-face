@@ -11,7 +11,7 @@ Para hospedagem, publique o conteúdo desta pasta, incluindo `assets/`, `config.
 ## Edição
 
 - `index.html`: headline, autor e comentários; todo o conteúdo está disponível sem renderização por JavaScript.
-- `style.css`: coluna de 550 px, player visual 322 px em 9:16 e ajustes mobile reais.
+- `style.css`: coluna de 550 px, player de 322 px no formato feed 3:4 e ajustes mobile reais. O quadro inteiro acompanha a proporção da variante ativa, sem faixas pretas adicionadas pela página.
 - `config.js`: embed, checkout e tempos de liberação da oferta por variante. Não misturar os IDs de outros funis.
 - `script.js`: data local do dia anterior, horário sorteado por sessão/dia, carregamento do player e interações locais.
 - `player.html` e `player.js`: integração isolada com VTurb A/B, sem cortar a imagem. A altura responde à proporção da variante ativa.
